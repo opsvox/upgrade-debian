@@ -70,7 +70,12 @@ update_current() {
 check_disk_space() {
     local free_space
     free_space=$(df -h / | awk 'NR==2 {print $4}' | sed 's/G//')
-    if (( $(echo "$free_space < 5" | bc -l) )); then
+    
+    # Convert free_space to an integer (removing decimal part if any)
+    free_space=${free_space%%.*}
+    
+    # Check if free_space is less than 5 using Bash arithmetic
+    if [ "$free_space" -lt 5 ]; then
         log "ERROR" "Insufficient disk space on /. Need at least 5GB free."
         exit 1
     fi
